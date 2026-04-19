@@ -12,6 +12,8 @@ function App() {
   const [tasks, setTasks] = useState(initialTasks);
   const [title, setTitle] = useState("");
   const [status, setStatus] = useState("todo");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredTasks, setFilteredTasks] = useState("all");
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -31,6 +33,13 @@ function App() {
   const deleteTask = (id) => {
     setTasks(tasks.filter((task) => task.id !== id));
   };
+  
+  const filteredTasksList = tasks.filter((task) => {
+    const matchTitle =task.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchStatus = filteredTasks === "all"? true : task.status === filteredTasks;
+    return matchTitle && matchStatus;
+  }
+);
   return (
     <div>
       <h1>Task Board</h1>
@@ -52,14 +61,29 @@ function App() {
       <button type="submit">Add Task</button>
     </form>
 
+    <input name="search"
+      type="text"
+      placeholder="Search tasks here !!!" 
+      onChange={(e) => setSearchTerm(e.target.value)} 
+    />
+
+    <select name="filter" onChange={(e) => setFilteredTasks(e.target.value)}>
+      <option value="all">All Tasks</option>
+      <option value="todo">To Do</option>
+      <option value="in-progress">In Progress</option>
+      <option value="done">Done</option>
+    </select>
+
     <ul>
-      {tasks.map((task) => (
+      {filteredTasksList.map((task) => (
         <li key={task.id}>
           {task.title} - {task.status}
           <button onClick={() => deleteTask(task.id)}>Delete</button>
         </li>
       ))}
     </ul>
+
+    
     </div>
   )
 }
